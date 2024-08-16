@@ -3,8 +3,14 @@ package org.example;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 
@@ -18,42 +24,57 @@ import java.util.concurrent.TimeUnit;
 
 public class AssessmentOne {
 
-    public static void main(String[] args) {
+    WebDriver driver;
 
+    @BeforeClass
+    public void openBrowser() {
+        //locate the browser
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\USER\\Downloads\\AssessmentDOne\\src\\chromedriver.exe");
         //launch browser
-        WebDriver driver = new ChromeDriver();
+        driver = new ChromeDriver();
         //maximize browser
         driver.manage().window().maximize();
-        //wait for an element to appear on the page
+        //Implicit wait: wait for an element to appear on the page
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        //Explicit wait
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(50));
         System.out.println("Browser launched");
+    }
+    @Test(priority = 0)
+    public void searchForAProduct() {
         //navigate to url
         driver.get("https://ecommerce-playground.lambdatest.io/");
-
         //searching for a product (phone) on the site.
-        driver.findElement(By.xpath("//body[1]/div[1]/div[5]/header[1]/div[2]/div[1]/div[2]/div[1]" +
-                "/form[1]/div[1]/div[1]/div[1]/div[2]/input[1]")).sendKeys("phone");
+        driver.findElement(By.cssSelector(".flex-md-nowrap [type='text']")).sendKeys("phone");
         driver.findElement(By.xpath("//body[1]/div[1]/div[5]/header[1]/div[2]/div[1]/div[2]/div[1]" +
                 "/form[1]/div[1]/div[1]/div[1]/div[2]/input[1]")).sendKeys(Keys.ENTER);
         System.out.println("Phone search successful");
+    }
 
+    @Test(priority = 1)
+    public void hoverOverTheProduct() {
         //Hover over the product, and click the cart icon from the icons displayed.
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,700)");
         WebElement phone = driver.findElement(By.xpath("//body/div[1]/div[6]/div[1]/div[2]/div[1]/div[1]" +
-                        "/div[5]/div[1]/div[4]/div[1]/div[1]/div[1]/a[1]/div[1]/div[1]/img[1]"));
+                "/div[5]/div[1]/div[4]/div[1]/div[1]/div[1]/a[1]/div[1]/div[1]/img[1]"));
         Actions mouse = new Actions(driver);
         mouse.moveToElement(phone).build().perform();
         driver.findElement(By.xpath("//body/div[1]/div[6]/div[1]/div[2]/div[1]/div[1]/div[5]/div[1]" +
                 "/div[4]/div[1]/div[1]/div[2]/button[1]")).click();
         System.out.println("Successfully clicked on cart icon");
+    }
 
+    @Test(priority = 2)
+    public void proceedToCheckOut() {
         //Proceed to checkout from the popup displayed.
         driver.findElement(By.xpath("//body/div[@id='notification-box-top']/div[1]/div[2]/div[2]/div[2]/a[1]"))
                 .click();
         System.out.println("Proceeded to checkout");
+    }
 
+    @Test(priority = 3)
+    public void fillInTheDetails() {
         //Fill in the details
         //first name
         WebElement firstName = driver.findElement(By.xpath("//input[@id='input-payment-firstname']"));
@@ -63,7 +84,7 @@ public class AssessmentOne {
         lastName.sendKeys("Babayale");
         //email
         WebElement email = driver.findElement(By.xpath("//input[@id='input-payment-email']"));
-        email.sendKeys("daisy@mailinator.com");
+        email.sendKeys("stor@mailinator.com");
         //telephone
         WebElement telephone = driver.findElement(By.xpath("//input[@id='input-payment-telephone']"));
         telephone.sendKeys("+2348060302552");
@@ -99,28 +120,42 @@ public class AssessmentOne {
         Select state = new Select(selectState);
         state.selectByVisibleText("Lagos");
         System.out.println("All required fields filled");
+    }
 
+    @Test(priority = 4)
+    public void uncheckTheStoreNewsletter() {
         //Uncheck the store newsletter
         WebElement newsLetterCheckBox = driver.findElement(By.xpath("//body/div[1]/div[5]/div[1]/div[1]/div[1]/form[1]/div[1]/div[2]/div[1]/div[3]"));
-        newsLetterCheckBox.click();
         //if (newsLetterCheckBox.isSelected()) {
-           // newsLetterCheckBox.click();
+        //newsLetterCheckBox.click();
         //}
+        newsLetterCheckBox.click();
         System.out.println("Unchecked store newsletter");
+    }
 
-        //Complete checkout
-        driver.findElement(By.xpath("//body/div[1]/div[5]/div[1]/div[1]/div[1]/form[1]/div[1]/div[2]/div[1]/div[4]")).click();
-        driver.findElement(By.xpath("//body/div[1]/div[5]/div[1]/div[1]/div[1]/form[1]/div[1]/div[2]/div[1]/div[5]")).click();
-        WebElement continueButton = driver.findElement(By.xpath("//button[@id='button-save']"));
+    @Test(priority = 5)
+    public void completeCheckout() {
+        // Complete checkout
+        driver.findElement(By.xpath("//body/div[1]/div[5]/div[1]/div[1]/div[1]/form[1]/div[1]/div[2]/div[1]/div[4]/label[1]")).click();
+        driver.findElement(By.xpath("//body/div[1]/div[5]/div[1]/div[1]/div[1]/form[1]/div[1]/div[2]/div[1]/div[5]/label[1]")).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(50)); // Declaring WebDriverWait
+        WebElement continueButton = new WebDriverWait(driver, Duration.ofSeconds(50))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("#button-save")));
         continueButton.click();
-        js = (JavascriptExecutor) driver;
+        driver.findElement(By.xpath("//button[@id='button-save']")).click();
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,500)");
-        WebElement confirmOrderButton = driver.findElement(By.xpath("//button[@id='button-confirm']"));
-        confirmOrderButton.click();
+        //js = (JavascriptExecutor) driver;
+        //js.executeScript("window.scrollBy(0,500)");
+        WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@id='button-confirm']")));
+        confirmButton.click();
         System.out.println("Checkout successful");
         driver.findElement(By.xpath("//a[contains(text(),'Continue')]")).click();
+    }
 
+    @AfterClass
+    public void quitBrowser() {
         driver.quit();
-
+        System.out.println("Quit Browser");
     }
 }

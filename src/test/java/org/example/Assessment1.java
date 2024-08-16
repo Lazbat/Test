@@ -19,10 +19,10 @@ import java.util.concurrent.TimeUnit;
 //e. Uncheck the store newsletter
 //f. Complete checkout
 
-public class Assessment {
+public class Assessment1 {
 
     public static void main(String[] args) {
-
+        //locate the browser
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\USER\\Downloads\\AssessmentDOne\\src\\chromedriver.exe");
         //launch browser
         WebDriver driver = new ChromeDriver();
@@ -68,7 +68,7 @@ public class Assessment {
         lastName.sendKeys("Babayale");
         //email
         WebElement email = driver.findElement(By.xpath("//input[@id='input-payment-email']"));
-        email.sendKeys("roy@mailinator.com");
+        email.sendKeys("stormy@mailinator.com");
         //telephone
         WebElement telephone = driver.findElement(By.xpath("//input[@id='input-payment-telephone']"));
         telephone.sendKeys("+2348060302552");
